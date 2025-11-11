@@ -5,7 +5,6 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -54,7 +53,7 @@ func WatchPath(s *Settings) {
 	scanner := bufio.NewScanner(stdout)
 	for scanner.Scan() {
 		line := scanner.Text()
-		log.Println(line)
+		s.Log.Debug(line)
 
 		parts, err := parseLine(line)
 		if err != nil || len(parts) < 2 {
@@ -67,7 +66,7 @@ func WatchPath(s *Settings) {
 
 		if s.Verbose {
 			for _, eventStr := range eventStrs {
-				log.Printf("eventStr: <%s>, <%s>", eventStr, line)
+				s.Log.Debug("eventStr: <%s>, <%s>", eventStr, line)
 			}
 		}
 
