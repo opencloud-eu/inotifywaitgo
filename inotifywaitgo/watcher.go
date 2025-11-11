@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"strings"
@@ -49,11 +50,16 @@ func WatchPath(s *Settings) {
 		return
 	}
 
+	logger := s.Log
+	if logger == nil {
+		logger = slog.New(slog.NewTextHandler(os.Stdout, nil))
+	}
+
 	// Read the output of inotifywait and split it into lines
 	scanner := bufio.NewScanner(stdout)
 	for scanner.Scan() {
 		line := scanner.Text()
-		s.Log.Debug(line)
+		logger.Debug(line)
 
 		parts, err := parseLine(line)
 		if err != nil || len(parts) < 2 {
@@ -66,7 +72,7 @@ func WatchPath(s *Settings) {
 
 		if s.Verbose {
 			for _, eventStr := range eventStrs {
-				s.Log.Debug("eventStr: <%s>, <%s>", eventStr, line)
+				logger.Debug("eventStr: <%s>, <%s>", eventStr, line)
 			}
 		}
 
